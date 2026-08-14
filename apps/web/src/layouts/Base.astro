@@ -2,13 +2,17 @@
 interface Props {
   title?: string;
   description?: string;
+  path?: string;
 }
 
 const {
   title = "Sunline Endeavour | Welding Electrode Manufacturer",
   description = "Sunline Endeavour manufactures premium welding electrodes (SMAW consumables) in Tamil Nadu, India.",
+  path = "/",
 } = Astro.props;
 
+const site = Astro.site ?? new URL(import.meta.env.PUBLIC_API_URL ?? "http://localhost:4321");
+const canonical = new URL(path, site);
 const year = new Date().getFullYear();
 ---
 
@@ -19,10 +23,19 @@ const year = new Date().getFullYear();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#17181a" />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/png" href="/assets/favicon.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sunline Endeavour" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
       <div class="container site-header__inner">
         <a class="brand" href="/">
@@ -40,8 +53,13 @@ const year = new Date().getFullYear();
     <slot />
 
     <footer class="site-footer">
-      <div class="container">
-        <p>&copy; {year} Sunline Endeavour. All Rights Reserved.</p>
+      <div class="container site-footer__inner">
+        <p class="site-footer__legal">&copy; {year} Sunline Endeavour. All Rights Reserved.</p>
+        <nav class="site-footer__nav" aria-label="Footer">
+          <a href="/products/">Products</a>
+          <a href="/batch-lookup/">Specification lookup</a>
+          <a href="/rfq/">Request a quote</a>
+        </nav>
       </div>
     </footer>
   </body>

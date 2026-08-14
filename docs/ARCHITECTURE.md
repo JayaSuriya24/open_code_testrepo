@@ -1,6 +1,6 @@
 # ARCHITECTURE.md
 
-Phase-4 snapshot of the Sunline Endeavour workspace. Read this before any
+Phase-5 snapshot of the Sunline Endeavour workspace. Read this before any
 structural change. Deploy/runbook details land in Phase 8.
 
 ## Workspace layout
@@ -142,6 +142,20 @@ Close-out gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 - `/batch-lookup` page: `BatchLookup` Preact island filters client-side over
   the static product data (instant, works on a static host); API mirrors it
   for programmatic/CSV consumers.
+
+## Phase 5 status (SEO & static hygiene)
+
+- `Base.astro` head: canonical per page, Open Graph, Twitter card,
+  `theme-color`, and a skip link; pages pass `path` for their canonical.
+- `/robots.txt` is generated (`src/pages/robots.txt.ts`) so the Sitemap URL
+  interpolates the configured `site` at build time; `404.html` ships with
+  paths back to the catalogue and the RFQ.
+- Footer gained a nav; dead assets removed (`rod.png` 387 KB and
+  `hero-bg.webp` were unreferenced). `assets/certs/ISO.png` remains unused —
+  it is unverified and must not be referenced until the current certificate
+  is confirmed.
 - Remaining from Phase 1: the schema gate (§6 step 3) and §2 spec migration
   (§6 step 4) still need human review of the open questions in §7 of
-  `docs/PHASE1-AUDIT.md`.
+  `docs/PHASE1-AUDIT.md`. The About/Contact/Quality pages (phase brief's
+  Phase 5) are deferred until §7 answers land, so no placeholder contact
+  details or unverified claims ship.

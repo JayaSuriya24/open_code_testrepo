@@ -1,0 +1,23 @@
+---
+import Base from "../layouts/Base.astro";
+import "@se/ui/tokens.css";
+import "../styles/global.css";
+---
+
+<Base title="Page not found — Sunline Endeavour" description="The page you are looking for does not exist.">
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-hero__kicker">404</p>
+        <h1 class="page-hero__title">That page does not exist</h1>
+        <p class="page-hero__lede">
+          The link may be outdated. Browse the catalogue or request a quote instead.
+        </p>
+        <p>
+          <a class="page-hero__cta" href="/products/">Browse the catalogue</a>
+          <a class="page-hero__cta page-hero__cta--secondary" href="/rfq/">Request a quote</a>
+        </p>
+      </div>
+    </section>
+  </main>
+</Base>

@@ -5,5 +5,10 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   output: "static",
   site: process.env.APP_URL ?? "http://localhost:4321",
-  integrations: [preact(), sitemap()],
+  integrations: [
+    preact(),
+    sitemap({
+      filter: (page) => !page.endsWith("robots.txt"),
+    }),
+  ],
 });

@@ -18,9 +18,9 @@ export function getStaticPaths() {
 const { product } = Astro.props;
 ---
 
-<Base title={`${product.name} — Sunline Endeavour`} description={product.tagline}>
-  <main>
-    <nav class="breadcrumb" aria-label="Breadcrumb">
+<Base title={`${product.name} — Sunline Endeavour`} description={product.tagline} path={`/products/${product.slug}/`}>
+<main id="main">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
       <ol class="breadcrumb__list">
         <li>
           <a href="/">Home</a>
