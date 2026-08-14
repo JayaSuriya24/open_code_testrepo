@@ -6,8 +6,12 @@ import sle7024 from "../products/sle-7024.yaml?raw";
 import sleHard from "../products/sle-hard.yaml?raw";
 import { parseProducts } from "./parse.ts";
 import type { Product } from "./schema.ts";
+import { filterProducts } from "./search.ts";
+import type { LookupCriteria } from "./search.ts";
 
 export type { Product, Size } from "./schema.ts";
+export { filterProducts };
+export type { LookupCriteria };
 
 const sources = [
   { file: "products/sle-6013.yaml", raw: sle6013 },

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { loadProduct } from "@se/content";
+import { filterProducts, loadAllProducts, loadProduct, lookupCriteriaSchema } from "@se/content";
 import { rfqItems, rfqs, type Db } from "@se/db";
 import { cors } from "hono/cors";
 import { Hono } from "hono";
@@ -109,6 +109,36 @@ export function createApp(deps: AppDeps): Hono {
       },
       201,
     );
+  });
+
+  app.post("/api/lookup", async (c) => {
+    let criteria;
+    try {
+      criteria = lookupCriteriaSchema.parse(await c.req.json());
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return c.json({ ok: false, errors: error.flatten().fieldErrors }, 400);
+      }
+      return c.json({ ok: false, error: "Invalid JSON body." }, 400);
+    }
+
+    if (Object.keys(criteria).length === 0) {
+      return c.json({ ok: false, errors: { criteria: ["At least one criterion is required."] } }, 400);
+    }
+
+    const results = filterProducts(loadAllProducts(), criteria).map((product) => ({
+      slug: product.slug,
+      name: product.name,
+      family: product.family,
+      aws: product.classification.aws,
+      is: product.classification.is,
+      en_iso: product.classification.en_iso,
+      diametersMm: product.sizes.map((size) => size.diameter_mm),
+      tensileMinMpa: product.mechanical.tensile_min_mpa,
+      elongationMinPct: product.mechanical.elongation_min_pct,
+    }));
+
+    return c.json({ ok: true, count: results.length, results }, 200);
   });
 
   return app;

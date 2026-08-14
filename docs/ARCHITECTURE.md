@@ -1,6 +1,6 @@
 # ARCHITECTURE.md
 
-Phase-3 snapshot of the Sunline Endeavour workspace. Read this before any
+Phase-4 snapshot of the Sunline Endeavour workspace. Read this before any
 structural change. Deploy/runbook details land in Phase 8.
 
 ## Workspace layout
@@ -92,6 +92,9 @@ component may hardcode a hex or magic pixel value.
   `DATABASE_URL` is set, and emailed. Email delivery is the critical path:
   with no SMTP transport the console mailer logs the message (dev only —
   `NODE_ENV=production` refuses to start without `SMTP_HOST`).
+- `POST /api/lookup`: batch specification search (AWS/family/diameter/
+  mechanicals/chemistry) over the catalogue; mechanical matching fails closed
+  on undeclared values.
 - Security: all user values reaching email headers pass through
   `sanitizeHeader()` (strips CR/LF); `From` is always our own domain, the
   visitor's address goes in `Reply-To` only.
@@ -126,12 +129,19 @@ products/*.yaml ──► parse.ts ──┬─► index.ts (fs)   ──► tes
 
 Close-out gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 
-## Phase 3 status (RFQ pipeline)
+## Phase 4 status (batch specification lookup)
 
-- `POST /api/rfq` validated, rate-limited, persisted (optional) and emailed;
-  header-injection hardening tested.
-- `@se/db` schema + migration 0000.
-- `RfqForm` Preact island on product pages and `/rfq`; nav CTA.
+- `filterProducts` + `LookupCriteria` live in `packages/content/src/search.ts`
+  (pure, dependency-free, exported as `@se/content/search` so islands bundle
+  only ~1.5 KB gz, not the YAML/zod layer). The Zod input schema
+  (`lookupCriteriaSchema`) sits in `search-schema.ts`, server-side only.
+- `POST /api/lookup`: matches the catalogue by AWS (substring, OR), family,
+  diameter, positions, current types, min tensile, min elongation, and
+  chemistry ceilings. Mechanical/chemistry matching **fails closed** — a
+  product that does not declare a value is a non-match, never a guess.
+- `/batch-lookup` page: `BatchLookup` Preact island filters client-side over
+  the static product data (instant, works on a static host); API mirrors it
+  for programmatic/CSV consumers.
 - Remaining from Phase 1: the schema gate (§6 step 3) and §2 spec migration
   (§6 step 4) still need human review of the open questions in §7 of
   `docs/PHASE1-AUDIT.md`.

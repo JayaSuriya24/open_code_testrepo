@@ -4,7 +4,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./raw": "./src/raw.ts"
+    "./raw": "./src/raw.ts",
+    "./search": "./src/search.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

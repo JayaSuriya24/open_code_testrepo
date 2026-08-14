@@ -172,3 +172,67 @@ describe("email header sanitisation", () => {
     expect(mail.subject.split("\n")).toHaveLength(1);
   });
 });
+
+describe("POST /api/lookup", () => {
+  it("returns matching products with resolved spec fields", async () => {
+    const { app } = testApp();
+    const response = await app.request("/api/lookup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ aws: ["E6013"] }),
+    });
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { ok: boolean; count: number; results: { slug: string; aws: string; diametersMm: number[] }[] };
+    expect(body.ok).toBe(true);
+    expect(body.count).toBeGreaterThanOrEqual(1);
+    const match = body.results.find((r: { slug: string }) => r.slug === "sle-6013");
+    expect(match).toBeTruthy();
+    expect(match!.aws).toBe("E6013");
+    expect(Array.isArray(match!.diametersMm)).toBe(true);
+  });
+
+  it("fails closed on mechanical criteria the catalogue does not declare", async () => {
+    const { app } = testApp();
+    const response = await app.request("/api/lookup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ minTensileMpa: 450 }),
+    });
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { count: number };
+    expect(body.count).toBe(0);
+  });
+
+  it("returns zero results when nothing matches", async () => {
+    const { app } = testApp();
+    const response = await app.request("/api/lookup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ aws: ["E9999"] }),
+    });
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { count: number; results: unknown[] };
+    expect(body.count).toBe(0);
+    expect(body.results).toEqual([]);
+  });
+
+  it("rejects an empty criteria object", async () => {
+    const { app } = testApp();
+    const response = await app.request("/api/lookup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects malformed criteria with a 400", async () => {
+    const { app } = testApp();
+    const response = await app.request("/api/lookup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ aws: "not-an-array", minTensileMpa: -5 }),
+    });
+    expect(response.status).toBe(400);
+  });
+});
