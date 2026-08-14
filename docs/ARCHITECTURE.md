@@ -1,7 +1,8 @@
 # ARCHITECTURE.md
 
-Phase-6 snapshot of the Sunline Endeavour workspace. Read this before any
-structural change. Deploy/runbook details land in Phase 8.
+Phase-6 snapshot of the Sunline Endeavour workspace (updated through the
+launch-readiness work). Read this before any structural change. Deploy and
+runbook details live in `docs/DEPLOY.md` and `docs/RUNBOOK.md`.
 
 ## Workspace layout
 
@@ -142,6 +143,24 @@ Close-out gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 - `/batch-lookup` page: `BatchLookup` Preact island filters client-side over
   the static product data (instant, works on a static host); API mirrors it
   for programmatic/CSV consumers.
+
+## Launch-readiness status (plan Phase 7)
+
+- `.github/workflows/ci.yml` gates main and every PR with lint, typecheck,
+  `content:validate`, tests, full build, and the JS budget gate.
+- `apps/web/src/components/Analytics.astro` is the analytics hook: it renders
+  nothing (zero JS, budget-safe) until `PUBLIC_ANALYTICS_SCRIPT_URL` +
+  `PUBLIC_ANALYTICS_DOMAIN` are set at build time. `robots.txt` and the sitemap
+  index are generated at build time.
+- Legacy URLs map in `apps/web/public/_redirects`: `Index.html`/`index.html`
+  → 301 home, `send_email.php` → 410 Gone (deliberately not redirected — it was
+  a POST handler).
+- API: `GET /health` is DB-aware (200 `db:"ok"`, 503 on failure; see
+  `packages/db` `pingDb`); a structured `onError` handler emits one JSON line
+  per failure to stdout for the host log drain. The exit criteria that still
+  need human action — phone alerting, a tested backup restore, Search Console
+  + Bing submission, and DNS/SPF/DKIM/DMARC — are checklists in
+  `docs/DEPLOY.md` and `docs/RUNBOOK.md`.
 
 ## Phase 7 status (consumption calculator)
 

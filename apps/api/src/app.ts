@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { filterProducts, loadAllProducts, loadProduct, lookupCriteriaSchema } from "@se/content";
-import { rfqItems, rfqs, type Db } from "@se/db";
+import { pingDb, rfqItems, rfqs, type Db } from "@se/db";
 import { cors } from "hono/cors";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -23,7 +23,28 @@ export function createApp(deps: AppDeps): Hono {
   const app = new Hono();
   app.use("/api/*", cors({ origin: deps.config.appUrl }));
 
-  app.get("/health", (c) => c.json({ ok: true, service: "sunline-endeavour-api" }));
+  app.onError((error, c) => {
+    console.error(
+      JSON.stringify({
+        event: "api.error",
+        method: c.req.method,
+        path: c.req.path,
+        error: error instanceof Error ? { name: error.name, message: error.message } : String(error),
+      }),
+    );
+    return c.json({ ok: false, error: "Internal server error." }, 500);
+  });
+
+  app.get("/health", async (c) => {
+    let db: "not-configured" | "ok" | "error" = "not-configured";
+    if (deps.db) {
+      db = (await pingDb(deps.db)) ? "ok" : "error";
+    }
+    if (db === "error") {
+      return c.json({ ok: false, service: "sunline-endeavour-api", db }, 503);
+    }
+    return c.json({ ok: true, service: "sunline-endeavour-api", db });
+  });
 
   app.post("/api/rfq", async (c) => {
     const ip = c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";

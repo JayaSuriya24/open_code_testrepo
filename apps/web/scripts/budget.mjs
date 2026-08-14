@@ -72,7 +72,7 @@ function findUnreferencedAssets(dir, referenced) {
     if (statSync(full).isDirectory()) {
       unreferenced.push(...findUnreferencedAssets(full, referenced));
     } else {
-      const rel = `assets/${entry}`;
+      const rel = full.slice(publicDir.length + 1);
       if (!referenced.has(rel) && !referenced.has(`/${rel}`)) {
         unreferenced.push(rel);
       }
@@ -83,7 +83,7 @@ function findUnreferencedAssets(dir, referenced) {
 
 const distHtml = htmlFiles.map((file) => readFileSync(file, "utf8")).join("\n");
 const referenced = new Set(distHtml.matchAll(/assets\/[A-Za-z0-9_./-]+/g).map((m) => m[0]));
-const unreferenced = findUnreferencedAssets(publicDir, referenced);
+const unreferenced = findUnreferencedAssets(join(publicDir, "assets"), referenced);
 for (const asset of unreferenced) console.log(`WARN  unreferenced asset: ${asset}`);
 
 if (failed) {

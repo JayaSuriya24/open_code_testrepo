@@ -1,0 +1,13 @@
+---
+// Privacy-first analytics hook. Renders nothing (zero JS) until the operator
+// sets PUBLIC_ANALYTICS_SCRIPT_URL in apps/web/.env — then it injects that
+// snippet verbatim with data-domain for Plausible-compatible trackers.
+const scriptUrl = import.meta.env.PUBLIC_ANALYTICS_SCRIPT_URL as string | undefined;
+const domain = import.meta.env.PUBLIC_ANALYTICS_DOMAIN as string | undefined;
+---
+
+{
+  scriptUrl && (
+    <script is:inline src={scriptUrl} data-domain={domain ?? ""} defer></script>
+  )
+}

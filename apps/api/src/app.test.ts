@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createApp } from "./app.ts";
 import { loadEnv } from "./env.ts";
+import type { Db } from "@se/db";
 import type { Mailer, MailMessage } from "./rfq/mailer.ts";
 import { createRateLimiter } from "./rfq/rate-limit.ts";
 import type { RateLimiter } from "./rfq/rate-limit.ts";
@@ -121,6 +122,50 @@ describe("POST /api/rfq", () => {
 
     expect(response.status).toBe(201);
     expect(sent).toHaveLength(1);
+  });
+});
+
+describe("GET /health", () => {
+  it("reports healthy with no database configured", async () => {
+    const { app } = testApp();
+    const response = await app.request("/health");
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { ok: boolean; service: string; db: string };
+    expect(body.ok).toBe(true);
+    expect(body.service).toBe("sunline-endeavour-api");
+    expect(body.db).toBe("not-configured");
+  });
+
+  it("reports 503 when the database is unreachable", async () => {
+    const app = createApp({
+      config: loadEnv({}),
+      mailer: { name: "test", send: async () => {} },
+      limiter: { allow: () => true },
+      db: {
+        execute: async () => {
+          throw new Error("connection refused");
+        },
+      } as unknown as Db,
+    });
+    const response = await app.request("/health");
+    expect(response.status).toBe(503);
+    const body = (await response.json()) as { ok: boolean; db: string };
+    expect(body.ok).toBe(false);
+    expect(body.db).toBe("error");
+  });
+
+  it("reports healthy when the database answers", async () => {
+    const app = createApp({
+      config: loadEnv({}),
+      mailer: { name: "test", send: async () => {} },
+      limiter: { allow: () => true },
+      db: { execute: async () => ({ rows: [{ "?column?": 1 }] }) } as unknown as Db,
+    });
+    const response = await app.request("/health");
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { ok: boolean; db: string };
+    expect(body.ok).toBe(true);
+    expect(body.db).toBe("ok");
   });
 });
 

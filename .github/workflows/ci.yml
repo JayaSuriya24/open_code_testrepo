@@ -6,18 +6,18 @@ on:
   pull_request:
 
 jobs:
-  check:
+  quality:
+    name: Lint · Typecheck · Test · Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 26
+          node-version: 22
           cache: pnpm
 
       - name: Install
@@ -29,14 +29,31 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Validate content
+        run: pnpm content:validate
+
       - name: Test
         run: pnpm test
-
-      - name: Content validation
-        run: pnpm content:validate
 
       - name: Build
         run: pnpm build
 
-      - name: Performance budget
-        run: pnpm --filter @se/web exec node scripts/budget.mjs
+  budget:
+    name: JS budget gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Budget gate
+        run: pnpm budget

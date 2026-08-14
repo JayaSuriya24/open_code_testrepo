@@ -1,0 +1,8 @@
+# Legacy sunlineendeavour.com URLs from the superseded static site.
+# The old `Index.html` and `send_email.php` are deleted deliberately — do not
+# resurrect their patterns (`send_email.php` contained a header-injection flaw).
+# Honored by Netlify and Cloudflare Pages; convert to the chosen host's format
+# per docs/RUNBOOK.md §redirects.
+/Index.html   /   301
+/index.html   /   301
+/send_email.php  410
