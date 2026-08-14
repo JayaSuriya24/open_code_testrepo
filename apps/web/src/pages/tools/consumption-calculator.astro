@@ -1,0 +1,34 @@
+---
+import Base from "../../layouts/Base.astro";
+import { loadAllProducts } from "@se/content/raw";
+import ConsumptionCalculator from "../../components/islands/ConsumptionCalculator";
+import "@se/ui/tokens.css";
+import "../../styles/global.css";
+
+const products = loadAllProducts();
+const pageTitle = "Electrode consumption calculator — Sunline Endeavour";
+const pageDescription =
+  "Estimate weld-metal and electrode consumption for fillet, V, X, K and U joints — then turn the quantity into a quote in one click.";
+---
+
+<Base title={pageTitle} description={pageDescription} path="/tools/consumption-calculator/">
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-hero__kicker">Welding tool</p>
+        <h1 class="page-hero__title">Electrode consumption calculator</h1>
+        <p class="page-hero__lede">
+          Pick a joint geometry, length and process to estimate the weld-metal mass and the electrode
+          quantity you will need. Work in kg — the calculator turns the result straight into a quote
+          request.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <ConsumptionCalculator products={products} client:visible />
+      </div>
+    </section>
+  </main>
+</Base>

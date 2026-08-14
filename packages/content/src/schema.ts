@@ -17,6 +17,11 @@ export const CurrentType = z.enum(CURRENT_TYPES);
 export const AlloyFamily = z.enum(ALLOY_FAMILIES);
 export const Process = z.enum(PROCESSES);
 
+export type PositionCode = z.infer<typeof PositionCode>;
+export type CurrentType = z.infer<typeof CurrentType>;
+export type AlloyFamily = z.infer<typeof AlloyFamily>;
+export type Process = z.infer<typeof Process>;
+
 export const ClassificationSchema = z.object({
   aws: z.string(),
   en_iso: z.string().nullable(),

@@ -1,10 +1,13 @@
 import { useState } from "preact/hooks";
 import type { Product } from "@se/content/raw";
+import { readQueryPrefill } from "../../lib/rfq-prefill";
 
 interface Props {
   products: Product[];
   initialSlugs?: string[];
   source?: "product" | "page";
+  initialMessage?: string;
+  hydrateFromQuery?: boolean;
 }
 
 interface Row {
@@ -16,19 +19,30 @@ const API_URL = (import.meta.env.PUBLIC_API_URL as string | undefined) ?? "http:
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-export default function RfqForm({ products, initialSlugs = [], source = "page" }: Props) {
+export default function RfqForm({
+  products,
+  initialSlugs = [],
+  source = "page",
+  initialMessage = "",
+  hydrateFromQuery = false,
+}: Props) {
   const single = products.length === 1;
   const firstSlug = products[0]?.slug ?? "";
-  const [rows, setRows] = useState<Row[]>(
-    initialSlugs.length > 0
+  const query =
+    hydrateFromQuery && typeof window !== "undefined"
+      ? readQueryPrefill(products, window.location.search)
+      : null;
+  const defaultRows: Row[] = query
+    ? query.slugs.map((slug) => ({ slug, quantity: String(query.qty) }))
+    : initialSlugs.length > 0
       ? initialSlugs.map((slug) => ({ slug, quantity: "1" }))
-      : [{ slug: firstSlug, quantity: "1" }],
-  );
+      : [{ slug: firstSlug, quantity: "1" }];
+  const [rows, setRows] = useState<Row[]>(defaultRows);
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(query?.note ?? initialMessage);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
 

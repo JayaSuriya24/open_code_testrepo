@@ -852,6 +852,123 @@ button:focus-visible {
   color: var(--color-text-muted-on-dark);
 }
 
+.tool-teaser {
+  max-width: 56ch;
+  color: var(--color-text-muted-on-dark);
+  margin-bottom: 1.5rem;
+}
+
+/* Consumption calculator */
+.calc__form {
+  margin-bottom: 2rem;
+}
+
+.calc__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.calc__field {
+  display: block;
+}
+
+.calc__label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted-on-dark);
+}
+
+.calc__form input,
+.calc__form select {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--color-text-on-dark);
+  background: var(--graphite-800);
+  border: 1px solid var(--color-border-on-dark);
+  border-radius: var(--radius-sm);
+}
+
+.calc__form input:focus-visible,
+.calc__form select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.calc__hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted-on-dark);
+}
+
+.calc__note {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.calc__result {
+  border: 1px solid var(--color-border-on-dark);
+  border-radius: var(--radius-md);
+  background: var(--gradient-raised);
+  padding: 1.5rem;
+  max-width: 720px;
+}
+
+.calc__figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.calc__figure {
+  border: 1px solid var(--graphite-600);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+.calc__figure--primary {
+  border-color: var(--color-accent-on-dark);
+}
+
+.calc__figure-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted-on-dark);
+  margin-bottom: 0.35rem;
+}
+
+.calc__figure-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-on-dark);
+}
+
+.calc__cta {
+  display: inline-block;
+  padding: 0.9rem 1.75rem;
+  font-weight: 600;
+  color: var(--graphite-900);
+  background: var(--gradient-accent);
+  border-radius: var(--radius-sm);
+}
+
+.calc__cta:hover {
+  filter: brightness(1.08);
+}
+
+.calc__footnote {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted-on-dark);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

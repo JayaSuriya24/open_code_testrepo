@@ -143,6 +143,30 @@ Close-out gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
   the static product data (instant, works on a static host); API mirrors it
   for programmatic/CSV consumers.
 
+## Phase 7 status (consumption calculator)
+
+- `packages/content/src/consumption.ts` (exported as `@se/content/consumption`)
+  is the pure, dependency-free calculator kernel — weld cross-section area per
+  joint type (fillet, V, X, K, U), weld-metal kg from length and density, and
+  electrode kg divided by process deposition efficiency. Sourced constants:
+  efficiencies SMAW 0.70 / FCAW 0.87 / GMAW 0.98 / SAW 0.98, densities 7.80
+  (C/C-Mn families) and 7.90 (stainless) from the product-plan §2.6.
+  Hard-facing has no sourced density and is intentionally left undefined.
+- `consumption-schema.ts` mirrors the kernel with a Zod discriminated union
+  (server-side only), exported from the `@se/content` main entry; the island
+  imports only the pure kernel so the bundle stays small.
+- `/tools/consumption-calculator`: `ConsumptionCalculator` Preact island
+  (`client:visible`). It estimates weld metal + electrode kg, optionally a cost
+  at a user-entered rate, and offers a one-tap RFQ that deep-links to
+  `/rfq?slugs=…&qty=…&note=…`. Rod count / cartons are absent because
+  per-diameter packing weights are null across the catalogue (see
+  `MISSING-DATA.md`).
+- `RfqForm` gains `hydrateFromQuery` (`/rfq` only) and `initialMessage`;
+  query-driven prefill lives in `apps/web/src/lib/rfq-prefill.ts` (pure,
+  unit-tested) so a calculator result lands as a prefilled basket line with the
+  consumption context in the message. Test fixtures verify the joint-area math
+  against five hand-worked examples.
+
 ## Phase 6 status (budget enforcement + CI)
 
 - `apps/web/scripts/budget.mjs` (run as `pnpm budget`) builds, walks each

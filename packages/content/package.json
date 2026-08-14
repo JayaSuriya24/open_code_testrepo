@@ -5,7 +5,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./raw": "./src/raw.ts",
-    "./search": "./src/search.ts"
+    "./search": "./src/search.ts",
+    "./consumption": "./src/consumption.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -54,3 +54,15 @@ hides null fields; nothing here is ever rendered as a placeholder.
 - Certification details — `ISO.png` exists but is unverified; no ISO 9001
   number or BIS/IS licence number documented anywhere.
 - Per-SKU applications, industries and competitor equivalents — no source.
+
+## Consumption calculator (Phase 7)
+
+- Weld-metal density defaults (7.80 C/C-Mn steel, 7.90 stainless) and
+  deposition efficiencies (SMAW 0.70, FCAW 0.87, GMAW/SAW 0.98) come from the
+  product-plan §2.6 research. The **hard-facing** family has no sourced density
+  default, so the calculator requires the user to enter the deposit density
+  rather than inventing one.
+- Rod count and carton outputs are intentionally absent: per-diameter
+  `kg_per_carton` and per-rod weights are null across all SKUs (see the table
+  above), so they cannot be computed without guessing. The calculator exposes
+  the raw electrode quantity in kg for the RFQ instead.

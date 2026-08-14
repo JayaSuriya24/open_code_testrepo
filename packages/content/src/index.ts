@@ -3,10 +3,13 @@ import { parseProducts } from "./parse.ts";
 import type { Product } from "./schema.ts";
 import { filterProducts } from "./search.ts";
 import { lookupCriteriaSchema } from "./search-schema.ts";
+import { consumptionEstimateSchema } from "./consumption-schema.ts";
 
 export type { Product, Size } from "./schema.ts";
 export { filterProducts, lookupCriteriaSchema };
 export type { LookupCriteria, LookupCriteriaInput } from "./search-schema.ts";
+export { consumptionEstimateSchema };
+export type { ConsumptionEstimateInput, ConsumptionJointInput } from "./consumption-schema.ts";
 
 const PRODUCTS_URL = new URL("../products/", import.meta.url);
 
