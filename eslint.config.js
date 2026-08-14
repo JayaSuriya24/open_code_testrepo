@@ -13,6 +13,10 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   {
+    files: ["**/*.mjs"],
+    languageOptions: { globals: globals.node },
+  },
+  {
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
     },

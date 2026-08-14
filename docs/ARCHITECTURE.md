@@ -1,6 +1,6 @@
 # ARCHITECTURE.md
 
-Phase-5 snapshot of the Sunline Endeavour workspace. Read this before any
+Phase-6 snapshot of the Sunline Endeavour workspace. Read this before any
 structural change. Deploy/runbook details land in Phase 8.
 
 ## Workspace layout
@@ -142,6 +142,16 @@ Close-out gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 - `/batch-lookup` page: `BatchLookup` Preact island filters client-side over
   the static product data (instant, works on a static host); API mirrors it
   for programmatic/CSV consumers.
+
+## Phase 6 status (budget enforcement + CI)
+
+- `apps/web/scripts/budget.mjs` (run as `pnpm budget`) builds, walks each
+  page's JS module graph, and asserts gzipped JS ≤ 25 KB (homepage) / 40 KB
+  (everything else), plus warns on unreferenced `public/assets` files. Worst
+  page today is ~11.9 KB gz.
+- `.github/workflows/ci.yml` runs lint, typecheck, test, `content:validate`,
+  build and the budget on push/PR, so the AGENTS.md performance-budget rule
+  is now enforced in CI rather than prose.
 
 ## Phase 5 status (SEO & static hygiene)
 

@@ -12,6 +12,7 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
     "test": "pnpm -r test",
+    "budget": "pnpm --filter @se/web budget",
     "content:validate": "node packages/content/scripts/validate.ts"
   },
   "devDependencies": {

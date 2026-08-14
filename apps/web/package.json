@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "budget": "astro build && node scripts/budget.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
