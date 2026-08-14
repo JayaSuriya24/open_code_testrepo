@@ -166,6 +166,15 @@ Close-out gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
   unit-tested) so a calculator result lands as a prefilled basket line with the
   consumption context in the message. Test fixtures verify the joint-area math
   against five hand-worked examples.
+- `packages/content/src/selector.ts` (`@se/content/selector`) is the electrode
+  wizard's decision table: base material → service condition → recommended SKU
+  (or a fail-closed no-match for low-alloy, which the range does not declare).
+  Guidance text refers only to declared facts (coating type, AWS class); a test
+  asserts every recommended slug resolves in `products/`.
+- `/tools/electrode-selector`: two-step `ElectrodeSelector` Preact wizard
+  (`client:visible`) — base material, then application for carbon steel —
+  ending in a recommendation card that offers a one-tap quote deep link. The two
+  tools cross-link and both sit in the header/footer nav.
 
 ## Phase 6 status (budget enforcement + CI)
 

@@ -6,7 +6,8 @@
     ".": "./src/index.ts",
     "./raw": "./src/raw.ts",
     "./search": "./src/search.ts",
-    "./consumption": "./src/consumption.ts"
+    "./consumption": "./src/consumption.ts",
+    "./selector": "./src/selector.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

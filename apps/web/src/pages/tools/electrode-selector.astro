@@ -1,0 +1,38 @@
+---
+import Base from "../../layouts/Base.astro";
+import { loadAllProducts } from "@se/content/raw";
+import ElectrodeSelector from "../../components/islands/ElectrodeSelector";
+import "@se/ui/tokens.css";
+import "../../styles/global.css";
+
+const products = loadAllProducts();
+const pageTitle = "Electrode selector — Sunline Endeavour";
+const pageDescription =
+  "Answer two questions about your base material and application to get a recommended welding electrode from the Sunline Endeavour range.";
+---
+
+<Base title={pageTitle} description={pageDescription} path="/tools/electrode-selector/">
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-hero__kicker">Welding tool</p>
+        <h1 class="page-hero__title">Electrode selector</h1>
+        <p class="page-hero__lede">
+          Tell us the base material and how the joint will be used — we will point you at the
+          matching grade in the range, and you can quote it in one tap.
+        </p>
+        <p>
+          <a class="page-hero__cta page-hero__cta--secondary" href="/tools/consumption-calculator/">
+            Estimating quantities? Open the consumption calculator →
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <ElectrodeSelector products={products} client:visible />
+      </div>
+    </section>
+  </main>
+</Base>
