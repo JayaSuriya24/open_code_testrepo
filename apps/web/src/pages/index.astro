@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import { loadAllProducts } from "@se/content/raw";
+import { organizationJsonLd } from "../lib/jsonld";
 import "@se/ui/tokens.css";
 import "../styles/global.css";
 
@@ -8,15 +9,6 @@ const products = loadAllProducts();
 ---
 
 <Base>
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="/">
-        <span class="brand__name">SUNLINE</span>
-        <span class="brand__accent">ENDEAVOUR</span>
-      </a>
-    </div>
-  </header>
-
   <main>
     <section class="hero">
       <div class="container">
@@ -33,20 +25,21 @@ const products = loadAllProducts();
           {
             products.map((product) => (
               <li class="product-list__item">
-                <span class="product-list__name">{product.name}</span>
-                <span class="product-list__tagline">{product.tagline}</span>
-                <code class="product-list__class tabular">{product.classification.aws}</code>
+                <a class="product-list__link" href={`/products/${product.slug}`}>
+                  <span class="product-list__name">{product.name}</span>
+                  <span class="product-list__tagline">{product.tagline}</span>
+                  <code class="product-list__class tabular">{product.classification.aws}</code>
+                </a>
               </li>
             ))
           }
         </ul>
+        <p>
+          <a class="product-list__more" href="/products/">Browse the full catalogue with filters →</a>
+        </p>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>&copy; {new Date().getFullYear()} Sunline Endeavour. All Rights Reserved.</p>
-    </div>
-  </footer>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationJsonLd(Astro.site))} />
 </Base>

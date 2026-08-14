@@ -36,9 +36,12 @@ Run `pnpm lint && pnpm typecheck && pnpm test` before declaring any task done.
 - Product specifications live ONLY in `packages/content/products/*.yaml`.
   Never hardcode a spec value in a component, a page, or a test fixture.
   If a page needs a spec, import it from the content layer.
-- React islands are for genuine interactivity only: calculators, the product
-  finder, the selector wizard, the RFQ basket, forms. Everything else is
-  `.astro` and ships zero JavaScript.
+- Preact/React islands are for genuine interactivity only: calculators, the
+  product finder, the selector wizard, the RFQ basket, forms. Everything else
+  is `.astro` and ships zero JavaScript. Preact is the default island
+  framework (React-sized JSX at ~8 KB gzipped vs ~45 KB for react-dom, which
+  would breach the catalogue JS budget); add React only if a dependency
+  requires it.
 - Islands hydrate with `client:visible`, never `client:load`, unless the
   component is above the fold.
 - All user input is validated server-side with Zod. Client validation is UX

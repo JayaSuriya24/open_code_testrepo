@@ -1,0 +1,30 @@
+---
+import Base from "../../layouts/Base.astro";
+import { loadAllProducts } from "@se/content/raw";
+import ProductFinder from "../../components/islands/ProductFinder";
+import "@se/ui/tokens.css";
+import "../../styles/global.css";
+
+const products = loadAllProducts();
+const pageTitle = "Products — Sunline Endeavour";
+const pageDescription =
+  "Browse the Sunline Endeavour electrode range by alloy family, process, AWS class, diameter, current type and welding position.";
+---
+
+<Base title={pageTitle} description={pageDescription}>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-hero__kicker">Catalogue</p>
+        <h1 class="page-hero__title">Products</h1>
+        <p class="page-hero__lede">Filter the range the way an engineer searches — by alloy family, process, AWS class, or diameter.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <ProductFinder products={products} client:visible />
+      </div>
+    </section>
+  </main>
+</Base>

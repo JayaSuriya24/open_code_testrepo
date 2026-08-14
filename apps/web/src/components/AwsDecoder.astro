@@ -1,0 +1,29 @@
+---
+import { decodeAws } from "../lib/aws";
+
+interface Props {
+  aws: string;
+}
+
+const { aws } = Astro.props;
+const segments = decodeAws(aws);
+---
+
+{segments && (
+  <section class="aws-decoder" aria-label={`AWS classification ${aws} decoded`}>
+    <h2 class="aws-decoder__title">What the code means</h2>
+    <ol class="aws-decoder__list">
+      {segments.map((segment) => (
+        <li class="aws-decoder__segment">
+          <details>
+            <summary>
+              <span class="aws-decoder__code tabular">{segment.code}</span>
+              <span class="aws-decoder__label">{segment.label}</span>
+            </summary>
+            <p class="aws-decoder__meaning">{segment.meaning}</p>
+          </details>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}

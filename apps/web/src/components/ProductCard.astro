@@ -1,0 +1,18 @@
+---
+import type { Product } from "@se/content/raw";
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+---
+
+<li class="product-card">
+  <a class="product-card__link" href={`/products/${product.slug}`}>
+    <h3 class="product-card__name">{product.name}</h3>
+    <code class="product-card__class tabular">{product.classification.aws}</code>
+    <p class="product-card__tagline">{product.tagline}</p>
+    <span class="product-card__cta">View specifications →</span>
+  </a>
+</li>

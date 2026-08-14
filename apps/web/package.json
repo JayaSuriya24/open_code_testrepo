@@ -11,12 +11,15 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "astro": "^5",
+    "astro": "^6.0.0",
     "typescript": "^5",
     "vitest": "^4.1.10"
   },
   "dependencies": {
+    "@astrojs/preact": "^6.0.2",
+    "@astrojs/sitemap": "^3.7.3",
     "@se/content": "workspace:^",
-    "@se/ui": "workspace:^"
+    "@se/ui": "workspace:^",
+    "preact": "^10.29.8"
   }
 }

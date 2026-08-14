@@ -1,0 +1,55 @@
+---
+import Base from "../../layouts/Base.astro";
+import { loadAllProducts } from "@se/content/raw";
+import AwsDecoder from "../../components/AwsDecoder.astro";
+import SpecTable from "../../components/SpecTable.astro";
+import { breadcrumbJsonLd, productJsonLd } from "../../lib/jsonld";
+import "@se/ui/tokens.css";
+import "../../styles/global.css";
+
+export function getStaticPaths() {
+  return loadAllProducts().map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+
+const quoteHref = `mailto:sales@sunlineendeavour.com?subject=${encodeURIComponent(`RFQ — ${product.name}`)}`;
+---
+
+<Base title={`${product.name} — Sunline Endeavour`} description={product.tagline}>
+  <main>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumb__list">
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="/products/">Products</a>
+        </li>
+        <li aria-current="page">{product.name}</li>
+      </ol>
+    </nav>
+
+    <section class="product-hero">
+      <div class="container">
+        <p class="product-hero__kicker">{product.classification.aws}</p>
+        <h1 class="product-hero__title">{product.name}</h1>
+        <p class="product-hero__lede">{product.tagline}</p>
+        <a class="product-hero__cta" href={quoteHref}>Request a quote for {product.name}</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <AwsDecoder aws={product.classification.aws} />
+        <SpecTable product={product} />
+      </div>
+    </section>
+  </main>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(productJsonLd(product, Astro.site))} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd(product.slug, product.name, Astro.site))} />
+</Base>

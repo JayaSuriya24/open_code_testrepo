@@ -7,6 +7,8 @@ import sleHard from "../products/sle-hard.yaml?raw";
 import { parseProducts } from "./parse.ts";
 import type { Product } from "./schema.ts";
 
+export type { Product, Size } from "./schema.ts";
+
 const sources = [
   { file: "products/sle-6013.yaml", raw: sle6013 },
   { file: "products/sle-7018.yaml", raw: sle7018 },

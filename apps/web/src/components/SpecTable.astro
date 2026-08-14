@@ -1,0 +1,236 @@
+---
+import type { Product } from "@se/content/raw";
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+
+const FAMILY_LABELS: Record<string, string> = {
+  "mild-steel": "Mild steel",
+  "low-alloy": "Low alloy",
+  "stainless-austenitic": "Stainless steel (austenitic)",
+  "stainless-dissimilar": "Stainless steel (dissimilar)",
+  "high-deposition": "High deposition",
+  "hard-facing": "Hard-facing",
+};
+
+const PROCESS_LABELS: Record<string, string> = {
+  SMAW: "Shielded Metal Arc Welding (SMAW)",
+  GMAW: "Gas Metal Arc Welding (GMAW)",
+  FCAW: "Flux-Cored Arc Welding (FCAW)",
+  SAW: "Submerged Arc Welding (SAW)",
+};
+
+const POSITION_LABELS: Record<string, string> = {
+  "1": "All positions",
+  "2": "Flat and horizontal fillet",
+  "3": "Flat",
+};
+
+const CURRENT_LABELS: Record<string, string> = {
+  AC: "AC",
+  "DC+": "DC+ (electrode positive)",
+  "DC-": "DC- (electrode negative)",
+  "AC_DC+": "AC or DC+",
+};
+
+const { classification, coating, packing, sizes, redry, chemistry, mechanical, equivalents } =
+  product;
+
+const hasPacking = packing !== null;
+const anyRedry =
+  redry !== null && (redry.temperature_c !== null || redry.duration_h !== null || redry.note !== null);
+const anyMechanical =
+  mechanical.tensile_min_mpa !== null ||
+  mechanical.yield_min_mpa !== null ||
+  mechanical.elongation_min_pct !== null ||
+  mechanical.impact.length > 0;
+const sizesHaveLength = sizes.some((size) => size.length_mm !== null);
+const sizesHaveAmperage = sizes.some(
+  (size) => size.amperage_min !== null || size.amperage_max !== null,
+);
+const sizesHavePieces = sizes.some((size) => size.pieces_per_packet !== null);
+const sizesHaveKg = sizes.some((size) => size.kg_per_carton !== null);
+const chemistryHasMin = chemistry.some((entry) => entry.min !== null);
+const chemistryHasMax = chemistry.some((entry) => entry.max !== null);
+const chemistryHasTypical = chemistry.some((entry) => entry.typical !== null);
+
+function formatChemistryCell(value: number | null): string {
+  return value === null ? "" : String(value);
+}
+---
+
+<section class="spec-table" aria-label={`Specifications for ${product.name}`}>
+  <h2 class="spec-table__title">Specifications</h2>
+
+  <dl class="spec-table__dl">
+    <dt>AWS classification</dt>
+    <dd class="tabular">{classification.aws}</dd>
+    {classification.en_iso && (
+      <>
+        <dt>EN ISO classification</dt>
+        <dd class="tabular">{classification.en_iso}</dd>
+      </>
+    )}
+    {classification.is && (
+      <>
+        <dt>IS classification</dt>
+        <dd class="tabular">{classification.is}</dd>
+      </>
+    )}
+    <dt>Alloy family</dt>
+    <dd>{FAMILY_LABELS[product.family] ?? product.family}</dd>
+    <dt>Process</dt>
+    <dd>{PROCESS_LABELS[product.process] ?? product.process}</dd>
+    {coating.type && (
+      <>
+        <dt>Coating type</dt>
+        <dd>{coating.type}</dd>
+      </>
+    )}
+    {coating.description && (
+      <>
+        <dt>Coating description</dt>
+        <dd>{coating.description}</dd>
+      </>
+    )}
+    {hasPacking && packing && packing.pieces_per_carton !== null && (
+      <>
+        <dt>Pieces per carton</dt>
+        <dd class="tabular">{packing.pieces_per_carton}</dd>
+      </>
+    )}
+    {hasPacking && packing && packing.cartons_per_box !== null && (
+      <>
+        <dt>Cartons per box</dt>
+        <dd class="tabular">{packing.cartons_per_box}</dd>
+      </>
+    )}
+    {product.current_types.length > 0 && (
+      <>
+        <dt>Current types</dt>
+        <dd>{product.current_types.map((type) => CURRENT_LABELS[type] ?? type).join(" · ")}</dd>
+      </>
+    )}
+    {product.positions.length > 0 && (
+      <>
+        <dt>Welding positions</dt>
+        <dd>{product.positions.map((code) => POSITION_LABELS[code] ?? code).join(" · ")}</dd>
+      </>
+    )}
+    {anyRedry && redry && (
+      <>
+        <dt>Redrying</dt>
+        <dd>
+          {[redry.temperature_c !== null ? `${redry.temperature_c} °C` : null, redry.duration_h !== null ? `${redry.duration_h} h` : null]
+            .filter((value) => value !== null)
+            .join(" · ")}
+          {redry.note ? ` — ${redry.note}` : ""}
+        </dd>
+      </>
+    )}
+  </dl>
+
+  {sizes.length > 0 && (
+    <table class="spec-table__sizes">
+      <caption class="sr-only">Available diameters</caption>
+      <thead>
+        <tr>
+          <th scope="col">Diameter (mm)</th>
+          {sizesHaveLength && <th scope="col">Length (mm)</th>}
+          {sizesHaveAmperage && <th scope="col">Amperage range (A)</th>}
+          {sizesHavePieces && <th scope="col">Pieces / packet</th>}
+          {sizesHaveKg && <th scope="col">Kg / carton</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {sizes.map((size) => (
+          <tr>
+            <td class="tabular">{size.diameter_mm}</td>
+            {sizesHaveLength && <td class="tabular">{size.length_mm ?? ""}</td>}
+            {sizesHaveAmperage && (
+              <td class="tabular">
+                {size.amperage_min !== null && size.amperage_max !== null
+                  ? `${size.amperage_min}–${size.amperage_max}`
+                  : ""}
+              </td>
+            )}
+            {sizesHavePieces && <td class="tabular">{size.pieces_per_packet ?? ""}</td>}
+            {sizesHaveKg && <td class="tabular">{size.kg_per_carton ?? ""}</td>}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+
+  {chemistry.length > 0 && (
+    <table class="spec-table__chemistry">
+      <caption class="sr-only">Typical weld-metal chemistry (wt %)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Element</th>
+          {chemistryHasMin && <th scope="col">Min (%)</th>}
+          {chemistryHasMax && <th scope="col">Max (%)</th>}
+          {chemistryHasTypical && <th scope="col">Typical (%)</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {chemistry.map((entry) => (
+          <tr>
+            <td>{entry.element}</td>
+            {chemistryHasMin && <td class="tabular">{formatChemistryCell(entry.min)}</td>}
+            {chemistryHasMax && <td class="tabular">{formatChemistryCell(entry.max)}</td>}
+            {chemistryHasTypical && <td class="tabular">{formatChemistryCell(entry.typical)}</td>}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+
+  {anyMechanical && (
+    <dl class="spec-table__dl">
+      {mechanical.tensile_min_mpa !== null && (
+        <>
+          <dt>Min tensile strength</dt>
+          <dd class="tabular">{mechanical.tensile_min_mpa} MPa</dd>
+        </>
+      )}
+      {mechanical.yield_min_mpa !== null && (
+        <>
+          <dt>Min yield strength</dt>
+          <dd class="tabular">{mechanical.yield_min_mpa} MPa</dd>
+        </>
+      )}
+      {mechanical.elongation_min_pct !== null && (
+        <>
+          <dt>Min elongation</dt>
+          <dd class="tabular">{mechanical.elongation_min_pct} %</dd>
+        </>
+      )}
+      {mechanical.impact.map((entry) => (
+        <div>
+          <dt>Impact energy</dt>
+          <dd class="tabular">
+            {entry.min_joules !== null ? `${entry.min_joules} J` : ""}
+            {entry.temperature_c !== null ? ` at ${entry.temperature_c} °C` : ""}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )}
+
+  {equivalents.length > 0 && (
+    <dl class="spec-table__dl">
+      {equivalents.map((equivalent) => (
+        <div>
+          <dt>Equivalent</dt>
+          <dd>
+            {equivalent.brand} · {equivalent.code}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )}
+</section>

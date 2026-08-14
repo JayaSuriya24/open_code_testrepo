@@ -8,6 +8,8 @@ const {
   title = "Sunline Endeavour | Welding Electrode Manufacturer",
   description = "Sunline Endeavour manufactures premium welding electrodes (SMAW consumables) in Tamil Nadu, India.",
 } = Astro.props;
+
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -21,6 +23,24 @@ const {
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   </head>
   <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="/">
+          <span class="brand__name">SUNLINE</span>
+          <span class="brand__accent">ENDEAVOUR</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a class="site-nav__link" href="/products/">Products</a>
+        </nav>
+      </div>
+    </header>
+
     <slot />
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; {year} Sunline Endeavour. All Rights Reserved.</p>
+      </div>
+    </footer>
   </body>
 </html>
