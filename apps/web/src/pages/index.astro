@@ -1,0 +1,52 @@
+---
+import Base from "../layouts/Base.astro";
+import { loadAllProducts } from "@se/content";
+import "@se/ui/tokens.css";
+import "../styles/global.css";
+
+const products = loadAllProducts();
+---
+
+<Base>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">
+        <span class="brand__name">SUNLINE</span>
+        <span class="brand__accent">ENDEAVOUR</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <p class="hero__kicker">Welding Electrode Manufacturer · Tamil Nadu, India</p>
+        <h1 class="hero__title">When the Arc Is Perfect,<br />the Weld Speaks.</h1>
+        <p class="hero__lede">Engineered consumables for plant engineers, procurement managers and distributors.</p>
+      </div>
+    </section>
+
+    <section class="section" id="products" aria-labelledby="products-title">
+      <div class="container">
+        <h2 id="products-title" class="section__title">Product range</h2>
+        <ul class="product-list">
+          {
+            products.map((product) => (
+              <li class="product-list__item">
+                <span class="product-list__name">{product.name}</span>
+                <span class="product-list__tagline">{product.tagline}</span>
+                <code class="product-list__class tabular">{product.classification.aws}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; {new Date().getFullYear()} Sunline Endeavour. All Rights Reserved.</p>
+    </div>
+  </footer>
+</Base>

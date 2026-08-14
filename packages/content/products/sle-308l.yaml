@@ -1,0 +1,46 @@
+slug: sle-308l
+name: SLE-308L
+family: stainless-austenitic
+process: SMAW
+tagline: Stainless steel electrode
+classification:
+  aws: E308L-16
+  en_iso: null
+  is: null
+coating:
+  type: Lime-Titania Coated
+  description: null
+current_types: []
+positions: []
+redry: null
+packing: null
+chemistry: []
+mechanical:
+  tensile_min_mpa: null
+  yield_min_mpa: null
+  elongation_min_pct: null
+  impact: []
+sizes:
+  - diameter_mm: 2.5
+    length_mm: null
+    amperage_min: null
+    amperage_max: null
+    pieces_per_packet: null
+    kg_per_carton: null
+  - diameter_mm: 3.15
+    length_mm: null
+    amperage_min: null
+    amperage_max: null
+    pieces_per_packet: null
+    kg_per_carton: null
+  - diameter_mm: 4.0
+    length_mm: null
+    amperage_min: null
+    amperage_max: null
+    pieces_per_packet: null
+    kg_per_carton: null
+applications: []
+industries: []
+datasheet: null
+msds: null
+equivalents: []

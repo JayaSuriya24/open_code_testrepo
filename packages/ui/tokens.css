@@ -1,0 +1,75 @@
+/* Sunline Endeavour design tokens — graphite ground, molten-amber accent.
+   No component may use a hex value; everything resolves through this file. */
+:root {
+  /* Graphite ground */
+  --graphite-900: #141519;
+  --graphite-800: #1a1c21;
+  --graphite-700: #23262c;
+  --graphite-600: #2e3239;
+  --graphite-500: #3b4149;
+  --graphite-400: #4d545e;
+  --graphite-300: #7a818c;
+  --graphite-200: #9aa1ab;
+  --graphite-100: #c6cbd2;
+  --graphite-50: #e9ebee;
+
+  /* Molten amber, drawn from the weld pool */
+  --amber-600: #a15d08;
+  --amber-500: #f59f1a;
+  --amber-400: #ffb94d;
+  --amber-glow: rgba(245, 159, 26, 0.35);
+
+  /* Weld arc and slag */
+  --arc: #fff3dc;
+  --slag: #4a4e53;
+
+  /* Semantic surface + text */
+  --color-bg: var(--graphite-900);
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f7f8;
+  --color-text: var(--graphite-800);
+  --color-text-muted: var(--graphite-400);
+  --color-text-on-dark: #ffffff;
+  --color-text-muted-on-dark: var(--graphite-200);
+  --color-border: var(--graphite-100);
+  --color-border-on-dark: var(--graphite-600);
+  --color-accent: var(--amber-500);
+  --color-accent-on-dark: var(--amber-400);
+  --color-link: var(--amber-600);
+  --focus-ring: var(--amber-500);
+
+  /* Gradients */
+  --gradient-ground: linear-gradient(180deg, var(--graphite-900) 0%, var(--graphite-700) 100%);
+  --gradient-raised: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--amber-500) 0%, var(--amber-600) 100%);
+
+  /* Typography */
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Oswald", "Inter", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "IBM Plex Mono", Menlo, monospace;
+
+  /* Spacing */
+  --section-padding: 6rem;
+  --container-max: 1200px;
+  --container-padding: 1.5rem;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.2);
+  --glow-amber: 0 0 40px var(--amber-glow);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 50%;
+
+  /* Header */
+  --header-height: 80px;
+}

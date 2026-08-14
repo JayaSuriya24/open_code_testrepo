@@ -1,0 +1,42 @@
+slug: sle-7024
+name: SLE-7024
+family: mild-steel
+process: SMAW
+tagline: High deposition electrode
+classification:
+  aws: E7024
+  en_iso: null
+  is: null
+coating:
+  type: Iron Powder Rutile
+  description: null
+current_types: []
+positions: []
+redry: null
+packing:
+  pieces_per_carton: 100
+  cartons_per_box: 4
+chemistry: []
+mechanical:
+  tensile_min_mpa: null
+  yield_min_mpa: null
+  elongation_min_pct: null
+  impact: []
+sizes:
+  - diameter_mm: 4.0
+    length_mm: null
+    amperage_min: null
+    amperage_max: null
+    pieces_per_packet: null
+    kg_per_carton: null
+  - diameter_mm: 5.0
+    length_mm: null
+    amperage_min: null
+    amperage_max: null
+    pieces_per_packet: null
+    kg_per_carton: null
+applications: []
+industries: []
+datasheet: null
+msds: null
+equivalents: []
