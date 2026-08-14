@@ -1,6 +1,6 @@
 # ARCHITECTURE.md
 
-Phase-1 snapshot of the Sunline Endeavour workspace. Read this before any
+Phase-3 snapshot of the Sunline Endeavour workspace. Read this before any
 structural change. Deploy/runbook details land in Phase 8.
 
 ## Workspace layout
@@ -17,11 +17,11 @@ sunline-endeavour/
 │   ├── ARCHITECTURE.md     # this file
 │   └── PHASE1-AUDIT.md     # legacy audit, spec extraction, phase execution plan
 ├── apps/
-│   ├── web/                # Astro 5, output: "static" — the public site
-│   └── api/                # Hono on Node — skeleton (health route only in Phase 1)
+│   ├── web/                # Astro 6, output: "static" — the public site
+│   └── api/                # Hono on Node — RFQ endpoint (Phase 3)
 └── packages/
     ├── content/            # product data as YAML + Zod schema — SINGLE SOURCE OF TRUTH
-    ├── db/                 # Drizzle — config only; tables land Phase 3+
+    ├── db/                 # Drizzle — rfqs/rfq_items schema + migration 0000 (Phase 3)
     └── ui/                 # design tokens (tokens.css); primitives arrive with consumers
 ```
 
@@ -63,12 +63,19 @@ count), `pnpm -F @se/content test`.
 semantic tokens (`--color-bg`, `--color-accent`, …), not raw palette. No
 component may hardcode a hex or magic pixel value.
 
-### `apps/web` — Astro 5 static site
+### `apps/web` — Astro 6 static site
 
 - `output: "static"`; `site` from `APP_URL`, default `http://localhost:4321`.
-- React islands only for genuine interactivity, hydrated with `client:visible`
+- Astro 6 is required: every Astro 5.x fails to build Preact islands (the Vite
+  SSR dep-optimizer cannot resolve the integration's `astro:preact:opts`
+  virtual module).
+- Preact islands only for genuine interactivity, hydrated with `client:visible`
   (never `client:load` unless above the fold). Everything else is `.astro` and
-  ships zero JS.
+  ships zero JS. Islands: `ProductFinder` (catalogue), `RfqForm` (product pages
+  + `/rfq`).
+- The RFQ form posts to `PUBLIC_API_URL` (default `http://localhost:8787`),
+  read from `import.meta.env`. Client validation is UX only; the API is the
+  trust boundary.
 - Pages import products from `@se/content/raw`.
 - `src/layouts/Base.astro` is the single shell; pages fill the slot.
 - Global styles in `src/styles/global.css` import `@se/ui/tokens.css`.
@@ -76,14 +83,27 @@ component may hardcode a hex or magic pixel value.
 
 ### `apps/api` — Hono on Node
 
-Skeleton in Phase 1: `/health` only. Inbound RFQ payloads (Phase 3) reuse the
-Zod schemas from `@se/content` for server-side validation. All user input is
-validated server-side; client validation is UX only.
+- Plain Node 26 runs the TypeScript directly (`node --watch src/index.ts`);
+  relative imports carry `.ts` extensions; `apps/api/tsconfig.json` enables
+  `allowImportingTsExtensions` and inherits `noEmit`. No build step.
+- `POST /api/rfq`: payload validated with Zod (`src/rfq/schema.ts`), SKUs
+  resolved against `@se/content` (single source of truth — a bogus slug is a
+  400), rate-limited per IP, persisted to Postgres via `@se/db` when
+  `DATABASE_URL` is set, and emailed. Email delivery is the critical path:
+  with no SMTP transport the console mailer logs the message (dev only —
+  `NODE_ENV=production` refuses to start without `SMTP_HOST`).
+- Security: all user values reaching email headers pass through
+  `sanitizeHeader()` (strips CR/LF); `From` is always our own domain, the
+  visitor's address goes in `Reply-To` only.
+- Env validated at startup by `src/env.ts` (Zod). `apps/api/.env.example`
+  documents every variable; `dev`/`start` use `node --env-file-if-exists=.env`.
 
 ### `packages/db` — Drizzle
 
-Config only in Phase 1. Migrations in `migrations/` are append-only; never edit
-an applied migration.
+- Postgres. `src/schema.ts` defines `rfqs` + `rfq_items`; migration
+  `0000_*.sql` is generated and append-only. `src/index.ts` exports the schema
+  and a lazy `createDb(url)` (no connection until called), so the API runs
+  without a database. `.ts` extension imports; run directly by Node.
 
 ## Data flow
 
@@ -106,10 +126,12 @@ products/*.yaml ──► parse.ts ──┬─► index.ts (fs)   ──► tes
 
 Close-out gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 
-## Phase 1 status
+## Phase 3 status (RFQ pipeline)
 
-- Steps 1–5 of `docs/PHASE1-AUDIT.md` §6 are implemented; the schema gate
-  (§6 step 3) and the §2 spec migration (§6 step 4) still need human review of
-  the open questions in §7 of that doc.
-- Assets: ported in Phase 1 are noted in `MISSING-DATA.md` where provenance is
-  unverified (certification, product photography).
+- `POST /api/rfq` validated, rate-limited, persisted (optional) and emailed;
+  header-injection hardening tested.
+- `@se/db` schema + migration 0000.
+- `RfqForm` Preact island on product pages and `/rfq`; nav CTA.
+- Remaining from Phase 1: the schema gate (§6 step 3) and §2 spec migration
+  (§6 step 4) still need human review of the open questions in §7 of
+  `docs/PHASE1-AUDIT.md`.

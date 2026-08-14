@@ -1,12 +1,30 @@
 import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import { createDb } from "@se/db";
+import { createApp } from "./app.ts";
+import { loadEnv } from "./env.ts";
+import { createConsoleMailer, createSmtpMailer } from "./rfq/mailer.ts";
+import { createRateLimiter } from "./rfq/rate-limit.ts";
 
-const app = new Hono();
+const config = loadEnv();
 
-app.get("/health", (c) => c.json({ ok: true, service: "sunline-endeavour-api" }));
+const mailer = config.smtp
+  ? createSmtpMailer(config.smtp)
+  : createConsoleMailer((message) =>
+      console.info("[rfq] email intercepted (no SMTP configured):", {
+        to: message.to,
+        replyTo: message.replyTo,
+        subject: message.subject,
+      }),
+    );
+const db = config.databaseUrl ? createDb(config.databaseUrl) : undefined;
 
-const port = Number(process.env.PORT ?? 8787);
+const app = createApp({
+  config,
+  mailer,
+  db,
+  limiter: createRateLimiter(config.rateLimitMax, config.rateLimitWindowMs),
+});
 
-serve({ fetch: app.fetch, port });
+serve({ fetch: app.fetch, port: config.port });
 
 export default app;

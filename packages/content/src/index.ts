@@ -2,6 +2,8 @@ import { readFileSync, readdirSync } from "node:fs";
 import { parseProducts } from "./parse.ts";
 import type { Product } from "./schema.ts";
 
+export type { Product, Size } from "./schema.ts";
+
 const PRODUCTS_URL = new URL("../products/", import.meta.url);
 
 export function loadAllProducts(): Product[] {

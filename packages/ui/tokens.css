@@ -37,6 +37,8 @@
   --color-accent-on-dark: var(--amber-400);
   --color-link: var(--amber-600);
   --focus-ring: var(--amber-500);
+  --color-success: #6fd27f;
+  --color-danger: #ff9c9c;
 
   /* Gradients */
   --gradient-ground: linear-gradient(180deg, var(--graphite-900) 0%, var(--graphite-700) 100%);

@@ -1,0 +1,33 @@
+---
+import Base from "../layouts/Base.astro";
+import { loadAllProducts } from "@se/content/raw";
+import RfqForm from "../components/islands/RfqForm";
+import "@se/ui/tokens.css";
+import "../styles/global.css";
+
+const products = loadAllProducts();
+const pageTitle = "Request a quote — Sunline Endeavour";
+const pageDescription =
+  "Tell us what you need — quantities, diameters and delivery expectations — and our sales team will reply within one business day.";
+---
+
+<Base title={pageTitle} description={pageDescription}>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-hero__kicker">Request for quote</p>
+        <h1 class="page-hero__title">Request a quote</h1>
+        <p class="page-hero__lede">
+          Pick the electrodes you need and tell us the quantities. We respond within one business
+          day with price, availability and lead time.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <RfqForm products={products} source="page" client:visible />
+      </div>
+    </section>
+  </main>
+</Base>

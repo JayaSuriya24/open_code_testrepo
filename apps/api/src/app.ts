@@ -1,0 +1,115 @@
+import { randomUUID } from "node:crypto";
+import { loadProduct } from "@se/content";
+import { rfqItems, rfqs, type Db } from "@se/db";
+import { cors } from "hono/cors";
+import { Hono } from "hono";
+import { z } from "zod";
+import type { Env } from "./env.ts";
+import { buildRfqMessage, resolveItems } from "./rfq/email.ts";
+import type { Mailer } from "./rfq/mailer.ts";
+import type { RateLimiter } from "./rfq/rate-limit.ts";
+import { rfqSchema, type RfqPayload } from "./rfq/schema.ts";
+
+type RfqId = `${string}-${string}-${string}-${string}-${string}`;
+
+export interface AppDeps {
+  config: Env;
+  mailer: Mailer;
+  limiter: RateLimiter;
+  db: Db | undefined;
+}
+
+export function createApp(deps: AppDeps): Hono {
+  const app = new Hono();
+  app.use("/api/*", cors({ origin: deps.config.appUrl }));
+
+  app.get("/health", (c) => c.json({ ok: true, service: "sunline-endeavour-api" }));
+
+  app.post("/api/rfq", async (c) => {
+    const ip = c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    if (!deps.limiter.allow(ip)) {
+      return c.json({ ok: false, error: "Too many requests. Please try again later." }, 429);
+    }
+
+    let payload: RfqPayload;
+    try {
+      payload = rfqSchema.parse(await c.req.json());
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return c.json({ ok: false, errors: error.flatten().fieldErrors }, 400);
+      }
+      return c.json({ ok: false, error: "Invalid JSON body." }, 400);
+    }
+
+    const { resolved, missing } = resolveItems(payload, loadProduct);
+    if (missing.length > 0) {
+      return c.json(
+        { ok: false, errors: { items: [`Unknown SKU: ${missing.join(", ")}`] } },
+        400,
+      );
+    }
+    if (resolved.length === 0) {
+      return c.json({ ok: false, errors: { items: ["No valid items requested."] } }, 400);
+    }
+
+    const message = buildRfqMessage({
+      payload,
+      resolved,
+      from: deps.config.mailboxes.from,
+      to: deps.config.mailboxes.to,
+      appUrl: deps.config.appUrl,
+    });
+
+    let id: RfqId = randomUUID() as RfqId;
+    if (deps.db) {
+      try {
+        const inserted = await deps.db
+          .insert(rfqs)
+          .values({
+            name: payload.name,
+            company: payload.company,
+            email: payload.email,
+            phone: payload.phone,
+            message: payload.message,
+            source: payload.source,
+            ip,
+          })
+          .returning({ id: rfqs.id });
+        const persistedId = inserted[0]?.id;
+        if (persistedId) {
+          id = persistedId as RfqId;
+          await deps.db.insert(rfqItems).values(
+            resolved.map((item, index) => ({
+              rfqId: id,
+              slug: item.slug,
+              name: item.name,
+              aws: item.aws,
+              quantity: item.quantity,
+              position: index,
+            })),
+          );
+        }
+      } catch (error) {
+        console.error("[rfq] persistence failed, continuing by email only", error);
+      }
+    }
+
+    try {
+      await deps.mailer.send(message);
+    } catch (error) {
+      console.error("[rfq] mailer failed", error);
+      return c.json({ ok: false, error: "Could not send the request." }, 500);
+    }
+
+    return c.json(
+      {
+        ok: true,
+        id,
+        items: resolved.map((item) => ({ ...item })),
+      },
+      201,
+    );
+  });
+
+  return app;
+}

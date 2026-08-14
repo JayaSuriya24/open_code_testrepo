@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import { loadAllProducts } from "@se/content/raw";
 import AwsDecoder from "../../components/AwsDecoder.astro";
 import SpecTable from "../../components/SpecTable.astro";
+import RfqForm from "../../components/islands/RfqForm";
 import { breadcrumbJsonLd, productJsonLd } from "../../lib/jsonld";
 import "@se/ui/tokens.css";
 import "../../styles/global.css";
@@ -15,8 +16,6 @@ export function getStaticPaths() {
 }
 
 const { product } = Astro.props;
-
-const quoteHref = `mailto:sales@sunlineendeavour.com?subject=${encodeURIComponent(`RFQ — ${product.name}`)}`;
 ---
 
 <Base title={`${product.name} — Sunline Endeavour`} description={product.tagline}>
@@ -38,7 +37,7 @@ const quoteHref = `mailto:sales@sunlineendeavour.com?subject=${encodeURIComponen
         <p class="product-hero__kicker">{product.classification.aws}</p>
         <h1 class="product-hero__title">{product.name}</h1>
         <p class="product-hero__lede">{product.tagline}</p>
-        <a class="product-hero__cta" href={quoteHref}>Request a quote for {product.name}</a>
+        <a class="product-hero__cta" href="#quote">Request a quote for {product.name}</a>
       </div>
     </section>
 
@@ -46,6 +45,18 @@ const quoteHref = `mailto:sales@sunlineendeavour.com?subject=${encodeURIComponen
       <div class="container">
         <AwsDecoder aws={product.classification.aws} />
         <SpecTable product={product} />
+      </div>
+    </section>
+
+    <section class="section section--quote" id="quote" aria-labelledby="quote-title">
+      <div class="container">
+        <h2 id="quote-title" class="section__title">Request a quote for {product.name}</h2>
+        <RfqForm
+          products={[product]}
+          initialSlugs={[product.slug]}
+          source="product"
+          client:visible
+        />
       </div>
     </section>
   </main>
